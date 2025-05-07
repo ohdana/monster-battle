@@ -29,6 +29,12 @@ class Game:
         self.back_surfs = folder_importer('images', 'back')
         self.bg_surfs = folder_importer('images', 'other')
 
+    def draw_monster_floor(self):
+        for sprite in self.all_sprites:
+            floor_surf = self.bg_surfs['floor']
+            floor_rect = floor_surf.get_frect(center = sprite.rect.midbottom + pygame.Vector2(0,-10))
+            self.display_surface.blit(floor_surf, floor_rect)
+            
     def run(self):
         while self.running:
             dt = self.clock.tick() / 1000
@@ -41,6 +47,7 @@ class Game:
 
             # draw  
             self.display_surface.blit(self.bg_surfs['bg'], (0,0))
+            self.draw_monster_floor()
             self.all_sprites.draw(self.display_surface)
             pygame.display.update()
         
