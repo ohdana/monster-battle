@@ -43,13 +43,18 @@ class Game:
         self.timers['player_end'].activate()
             
     def apply_attack(self, target, attack):
-        print(attack)
-        target.health -= 20
+        attack_data = ABILITIES_DATA[attack]
+        
+        # element
+        attack_element = attack_data['element']
+        attack_multiplier = ELEMENT_DATA[attack_element][target.element] 
+        
+        target.health -= attack_data['damage'] * attack_multiplier
     
     def opponent_turn(self):
         attack = choice(self.opponent.abilities)
         self.apply_attack(self.monster, attack)
-        self.timer['opponent_end'].activate()
+        self.timers['opponent_end'].activate()
     
     def player_turn(self):
         self.player_active = True
