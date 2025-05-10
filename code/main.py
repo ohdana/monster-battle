@@ -3,7 +3,7 @@ from support import *
 from timer import Timer
 from monster import Monster, Opponent
 from random import choice
-from ui import UI
+from ui import *
 
 class Game:
     def __init__(self):
@@ -28,7 +28,8 @@ class Game:
         
         # ui
         self.ui = UI(self.monster, self.player_monsters, self.simple_surfs, self.get_input)
-
+        self.opponent_ui = OpponentUI(self.opponent)
+        
         # timers
         self.timers = {'player_end': Timer(1000, func = self.opponent_turn), 'opponent_end': Timer(1000, func = self.player_turn)}
         
@@ -93,6 +94,7 @@ class Game:
             self.draw_monster_floor()
             self.all_sprites.draw(self.display_surface)
             self.ui.draw()
+            self.opponent_ui.draw()
             pygame.display.update()
         
         pygame.quit()
