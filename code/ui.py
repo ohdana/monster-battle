@@ -119,6 +119,7 @@ class UI:
     
     def update(self):
         self.input()
+        self.available_monster = [monster for monster in self.player_monsters if monster != self.monster and monster.health > 0]
                  
     def draw(self):
         match self.state:
