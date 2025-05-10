@@ -1,7 +1,7 @@
 from settings import *
 from support import *
 from timer import Timer
-from monster import Monster, Opponent
+from monster import *
 from random import choice
 from ui import *
 from attack import AttackAnimationSprite
@@ -65,12 +65,28 @@ class Game:
         AttackAnimationSprite(target, self.attack_frames[attack_data['animation']], self.all_sprites)
     
     def opponent_turn(self):
-        attack = choice(self.opponent.abilities)
-        self.apply_attack(self.monster, attack)
-        self.timers['opponent_end'].activate()
+        if self.opponent.health <= 0:
+            self.player_active = True
+            self.opponent.kill()
+            monster_name = choice(list(MONSTER_DATA.keys()))
+            self.opponent = Opponent(monster_name, self.front_surfs[monster_name], self.all_sprites)
+            self.opponent_ui.monster = self.opponent
+        else:
+            attack = choice(self.opponent.abilities)
+            self.apply_attack(self.monster, attack)
+            self.timers['opponent_end'].activate()
     
     def player_turn(self):
         self.player_active = True
+        if self.monster.health <= 0:
+            available_monsters = [monster for monster in self.player_monsters if monster.health > 0]
+            if available_monsters:
+                self.monster.kill()
+                self.monster = available_monsters[0]
+                self.all_sprites.add(self.monster)
+                self.ui.monster = self.monster
+            else:
+                self.running = False
     
     def update_timers(self):
         for timer in self.timers.values():
@@ -85,9 +101,10 @@ class Game:
 
     def draw_monster_floor(self):
         for sprite in self.all_sprites:
-            floor_surf = self.bg_surfs['floor']
-            floor_rect = floor_surf.get_frect(center = sprite.rect.midbottom + pygame.Vector2(0,-10))
-            self.display_surface.blit(floor_surf, floor_rect)
+            if isinstance(sprite, Creature):
+                floor_surf = self.bg_surfs['floor']
+                floor_rect = floor_surf.get_frect(center = sprite.rect.midbottom + pygame.Vector2(0,-10))
+                self.display_surface.blit(floor_surf, floor_rect)
             
     def run(self):
         while self.running:
